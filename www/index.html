@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="js/jquery.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<script src="js/bootstrap.min.js"></script>
+<link href="css/autocomplete.css" rel="stylesheet">
+<script type="text/javascript" src="cordova.js"></script>
+<title>Login</title>
+<style>
+@font-face {
+    font-family:Lato;
+    src: url(css/Lato-Regular.ttf);
+}
+body{
+	font-family:Lato;
+	background-color:#038dab;
+}
+.vue{
+    background:#FFF;
+    color:#5a5b5d;
+    font-size:18px;
+    padding-right:20px;
+    height:30px;
+    border:1px solid #c6c6c6;
+    border-radius:5px;
+    font-weight:800;
+}
+.totalsmall{
+
+	margin-top: 10px;
+	margin-left: 7px;
+	width: 100%;
+	height: 27px;
+	border-radius: 5px 5px 5px 5px;
+	text-align: right;
+	padding-right: 10px;
+	font-size: 18px;
+	font-weight: bold;
+	line-height: 1.5;
+}
+</style>
+<script type="text/javascript">
+cordova.plugins.barcodeScanner.scan(
+      function (result) {
+          alert("We got a barcode\n" +
+                "Result: " + result.text + "\n" +
+                "Format: " + result.format + "\n" +
+                "Cancelled: " + result.cancelled);
+      },
+      function (error) {
+          alert("Scanning failed: " + error);
+      }
+   );
+</script>
+</head>
+<body>
+<div class="view-container">
+    <br>
+    Scan
+    <br>
+    <div class="row">
+        <div class="col-md-1"><input id="codigo" name="codigo" type="text"></div>
+        <div class="col-md-1"></div>
+        <div class="col-md-1"><input id="scan" name="scan" type="button" ontouch="cordova.plugins.barcodeScanner.scan();" onclick="cordova.plugins.barcodeScanner.scan();" value="Scan"></div>
+    </div>
+</div>
+</body>
+</html>
