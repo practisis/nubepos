@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.practisis.wifibar" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>Practisis Wifibar</name>
+    <name>Nubesita</name>
     <description>
-        Wifi conexion BAR
+        Nube
     </description>
     <author email="info@practisis.com" href="http://practisis.net">
         Practisis S.A.
