@@ -1,71 +1,593 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html PUBLIC "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta charset="utf-8">
-<script src="js/jquery.js"></script>
-<script src="js/jquery-ui.min.js"></script>
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<script src="js/bootstrap.min.js"></script>
-<link href="css/autocomplete.css" rel="stylesheet">
-<script type="text/javascript" src="cordova.js"></script>
-<title>Login</title>
-<style>
-@font-face {
-    font-family:Lato;
-    src: url(css/Lato-Regular.ttf);
-}
-body{
-	font-family:Lato;
-	background-color:#038dab;
-}
-.vue{
-    background:#FFF;
-    color:#5a5b5d;
-    font-size:18px;
-    padding-right:20px;
-    height:30px;
-    border:1px solid #c6c6c6;
-    border-radius:5px;
-    font-weight:800;
-}
-.totalsmall{
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>NubePOS 1.0</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+		
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="js/jquery.min.js"></script>
+		
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+		<script src="js/jquery-ui.min.js"></script>
+		
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
+		<link rel="stylesheet" href="css/jquery-ui.css"/>
+		
+		
+		<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js"></script>
+		<script src="js/raphael-min.js"></script>
+		
+		
+		<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.0/morris.min.js"></script>
+		<script src="js/morris.min.js"></script>
+		
+		
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
+		
+		
+        <!-- needs images, font... therefore can not be part of ui.css -->
+        <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="bower_components/weather-icons/css/weather-icons.min.css">
+		
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		
+		
+        <link rel="stylesheet" href="styles/estilotemp.css">
+        <script type="text/javascript" src="js/cordova.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+        <!-- end needs images -->
+		<link rel="stylesheet" href="styles/mainformated.css">
+    </head>
+    <body data-ng-app="app" id="app" data-custom-background data-off-canvas-nav class='cuerpoGeneral'>
+        <div data-ng-controller="AppCtrl">
+            <div data-ng-hide="isSpecificPage()" data-ng-cloak>
+               <section id="header" class="top-header">
+				<header class="clearfix">
+				<a href="#/" data-toggle-min-nav class="toggle-min" >
+				<i class="fa fa-bars"></i></a>
 
-	margin-top: 10px;
-	margin-left: 7px;
-	width: 100%;
-	height: 27px;
-	border-radius: 5px 5px 5px 5px;
-	text-align: right;
-	padding-right: 10px;
-	font-size: 18px;
-	font-weight: bold;
-	line-height: 1.5;
-}
-</style>
-<script type="text/javascript">
-cordova.plugins.barcodeScanner.scan(
-      function (result) {
-          alert("We got a barcode\n" +
-                "Result: " + result.text + "\n" +
-                "Format: " + result.format + "\n" +
-                "Cancelled: " + result.cancelled);
-      },
-      function (error) {
-          alert("Scanning failed: " + error);
-      }
-   );
-</script>
-</head>
-<body>
-<div class="view-container">
-    <br>
-    Scan
-    <br>
-    <div class="row">
-        <div class="col-md-1"><input id="codigo" name="codigo" type="text"></div>
-        <div class="col-md-1"></div>
-        <div class="col-md-1"><input id="scan" name="scan" type="button" ontouch="cordova.plugins.barcodeScanner.scan();" onclick="cordova.plugins.barcodeScanner.scan();" value="Scan"></div>
-    </div>
+				<!-- Logo -->
+				<div class="logo">
+					<a href="#/">
+						<span>NubePOS</span>
+					</a>
+				</div>
+				<div onclick='abrirLogin()' style='background-color:#23AE89;width:200px;padding-top:15px;padding-bottom:15px;position:relative;z-index:2000;float:right;text-align:center;margin-right:10%;border-radius:10px;cursor:pointer;'>
+					Sincronizar 
+				</div>
+				<!-- needs to be put after logo to make it working-->
+				<div class="menu-button" toggle-off-canvas>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</div>
+				 <ul class="nav-right pull-right list-unstyled" style='display:none;'>
+							<li class="dropdown text-normal nav-profile" dropdown is-open="status.isopenProfile">
+								<a href="javascript:;" class="dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+									<span class="hidden-xs">
+										<h3 id='empresaName' style='color:#FFF; padding-right:20px; margin-top:5px; margin-bottom:-3px;'>
+										</h3><span style='font-size:11px; color:#2ec1cc; font-weight:bold;' id='nemp'></span>
+									</span>
+								</a>
+							</li>
+
+				</ul>        
+				</header>
+			   </section>
+               <aside id="nav-container">
+			   <div id="nav-wrapper">
+					<ul id="nav"
+						data-ng-controller="NavCtrl"
+						data-collapse-nav
+						data-slim-scroll
+						data-highlight-active>
+						<li><a onclick="envia('dashboard');" href='#'> <i class="fa fa-dashboard menuItem" style='color:#FFF;'><span class="icon-bg bg-danger menu-button"></span></i><span data-i18n="Resumen">Resumen</span></a>
+						</li>
+						<li>
+							<a href='#'><i class="fa fa-usd  menuItem" style='color:#FFF;'><span class="icon-bg bg-orange"></span></i><span data-i18n="Ventas">Ventas</span><span style='padding-left:5px;' class="fa fa-caret-down" ></span></a>
+							<ul>
+								<li><a onclick="envia('nubepos/nubepos/');" href='#'><i class="fa fa-caret-right"></i><span data-i18n="Punto de Venta">Punto de Venta</span></a></li>
+								<li><a href="#" onclick="envia('historial');"><i class="fa fa-caret-right"></i><span data-i18n="Historial">Historial</span></a></li>
+							</ul>
+						</li>
+						<li>
+							<a href="#"><i class="fa fa-diamond menuItem" style='color:#FFF;'><span class="icon-bg bg-warning"></span></i><span data-i18n="Productos">Productos</span><span style='padding-left:5px;' class="fa fa-caret-down" ></span></a>
+							<ul>
+								<li><a onclick="envia('listaproductos');" href='#'><i class="fa fa-caret-right"></i><span data-i18n="Lista de Productos">Lista de Productos</span></a></li>
+								<li><a onclick="envia('nuevoproducto');" href="#"><i class="fa fa-caret-right"></i><span data-i18n="Nuevo Producto">Nuevo Producto</span></a></li>
+							</ul>
+						</li>
+						<li>
+							<a href="#"><i class="fa fa-barcode menuItem" style='color:#FFF;'><span style='color:#FFF;' class="icon-bg bg-success" ></span></i><span data-i18n="Inventarios">Inventarios<span style='padding-left:5px;' class="fa fa-caret-down" ></span></span></a>
+							<ul>
+								<li><a onclick="envia('tomainventario');" href='#'><i class="fa fa-caret-right"></i><span data-i18n="Toma de Inventario">Toma de Inventario</span></a></li>
+								<li><a href="#"><i class="fa fa-caret-right"></i><span data-i18n="Ver Inventario">Ver Inventario</span></a></li>
+							</ul>
+						</li>
+						<li>
+							<a href="#"><i class="fa fa-users menuItem" style='color:#FFF;'><span class="icon-bg bg-info"></span></i><span data-i18n="Clientes">Clientes</span><span style='padding-left:5px;' class="fa fa-caret-down" ></span></a>
+								<ul>
+								<li><a onclick="envia('listaclientes');" href='#'><i class="fa fa-caret-right"></i><span data-i18n="Lista de Clientes">Lista de Clientes</span></a></li>
+								<li><a onclick="envia('nuevocliente');" href="#"><i class="fa fa-caret-right"></i><span data-i18n="Nuevo Cliente">Nuevo Cliente</span></a></li>
+								</ul>
+						</li>
+						<li onclick='abrirVentanaCuentas()'>
+							<a href="#">
+								<i class="fa fa-cloud menuItem" style='color:#FFF;'>
+									<span class="icon-bg bg-primary"></span>
+								</i>
+								<span data-i18n="Cloud">Cloud</span><br/>
+								<span id='id_emp' style='margin-left:12px;font-size:12px;color:#31B0D5;'></span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</aside>
+            </div>
+            <div class="view-container">
+                <section data-ng-view id="content" class="animate-fade-up">
+				</section>
+            </div>
+        </div>
+		<!--divs para los json ---->
+		<div id="jsonProductos" style="display: none;"></div>
+		<div id="jsonCategorias" style="display: none;"></div>
+		<div id="jsonformaspago" style="display: none;">{"FormaPago":[{"id":"1","nombre":"Efectivo","imagen":"Efectivo"},{"id":"2","nombre":"Tarjetas","imagen":"Tarjetas"},{"id":"3","nombre":"Cheques","imagen":"Bancos"},{"id":"4","nombre":"CxC","imagen":"CxC"},{"id":"5","nombre":"Retencion","imagen":"Retenciones1"},{"id":"9","nombre":"Cortesia","imagen":"Cortesia"},{"id":"14","nombre":"Otros","imagen":"General"}]}</div>
+		<div id='jsonmisclientes' style="display:none"></div>
+		<div style='display:none;' id='jsoncaja'></div>
+		<!------>
+        <!---<script src="scripts/vendor.js"></script>-->
+        <!---<script src="scripts/ui.js"></script>-->
+        <!---<script src="scripts/app.js"></script>-->
+		<!--<script>onDeviceReady();</script>--->
+		<div class="modal fade" id="myModal" role="dialog" style='background-color:rgba(0,0,0,0.5);' data-backdrop='static'>
+		  <div class="modal-dialog modal-sm">
+			<div class="modal-content text-center" style='background-color:#000;  text-aling:center;'>
+				 <h2>Cargando...</h2>
+				 <img src='images/loader.gif' style='width:60px; margin:20px;'/>
+			</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+	<!--Envia a llamar a login-->
+<div style='width:100%;height:100%;background-color:rgba(0,0,0,0.7);position:absolute;z-index:2000;display:none;' id="loginPractisis">	
+	<div  style="background: rgba(0,0,0 0.8) none repeat scroll 0% 0%; width: 600px; height: auto; position: relative; z-index: 20000; text-align: center;margin:0 auto;margin-top:10%;">
+		<br/>
+		<br/>
+		<div id="popupLogin" style="padding:20px;margin-top: 1000px; box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.75); background-color: #ffffff; color: #000000; margin-left: auto; margin-right: auto;overflow:auto;height:350px;">
+			<div class="encabezadorojo" style='position:relative; height:30px; font-size:20px;'>LOGIN<img src='images/xcierre.png' style='position:absolute; top:3px; right:5px; cursor:pointer;' onclick='cerrarLogin()'/></div>
+			<div style='background-color:#E0DEDE; padding-top:20px; padding-bottom:20px;' id='contieneEmpresas'>
+				<div class="row" style="padding-top: 10px;padding-bottom: 10px;">
+					<div class="col-md-12"  style="text-align: center;">
+							<div class="panel panel-default">
+									<div  class="panel-heading">
+										<strong><span class="glyphicon glyphicon-th"></span>
+										 Autentificación de Usuario
+									</div>        
+									<div class="panel-body">
+										<div class="input-group">
+											<label class="input-group-addon">User:</label>
+											<input type="text" id="user" class="form-control" />
+										</div>
+										<div style="height:10px;"></div>
+										<div class="input-group">
+										<label class="input-group-addon">Pass:</label>
+										<input type="password" id="pass" class="form-control" />
+										</div>
+										<div style="height:10px;"></div>
+										<button class="btn btn-default" id='btnvalida' type="button" onclick="valida();">Login</button>
+									</div>
+							</div>
+									<div id="mensaje"></div>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
-</body>
+
+
+<div style='width:100%;height:100%;background-color:rgba(0,0,0,0.7);position:absolute;z-index:2000;display:none;' id="loginPractisisNuevo">	
+	<div  style="background: rgba(0,0,0 0.8) none repeat scroll 0% 0%; width: 600px; height: auto; position: relative; z-index: 20000; text-align: center;margin:0 auto;margin-top:10%;">
+		<br/>
+		<br/>
+		<div id="popupLoginNuevo" style="padding:20px;margin-top: 1000px; box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.75); background-color: #ffffff; color: #000000; margin-left: auto; margin-right: auto;overflow:auto;height:350px;">
+			<div class="encabezadorojo" style='position:relative; height:30px; font-size:20px;'>LOGIN PRACTISIS<img src='images/xcierre.png' style='position:absolute; top:3px; right:5px; cursor:pointer;' onclick='cerrarLogin2()'/></div>
+			<div style='background-color:#E0DEDE; padding-top:20px; padding-bottom:20px;' id='contieneEmpresasNuevo'>
+				<div class="row" style="padding-top: 10px;padding-bottom: 10px;">
+					<div class="col-md-12"  style="text-align: center;">
+							<div class="panel panel-default">
+									<div  class="panel-heading">
+										<strong><span class="glyphicon glyphicon-th"></span>
+										 Autentificación de Usuario
+									</div>        
+									<div class="panel-body">
+										<div class="input-group">
+											<label class="input-group-addon">User:</label>
+											<input type="text" id="user2" class="form-control" />
+										</div>
+										<div style="height:10px;"></div>
+										<div class="input-group">
+										<label class="input-group-addon">Pass:</label>
+										<input type="password" id="pass2" class="form-control" />
+										</div>
+										<div style="height:10px;"></div>
+										<button class="btn btn-default" id='btnvalida2' type="button" onclick="valida2();">Login</button>
+									</div>
+							</div>
+									<div id="mensaje2"></div>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div style='width:100%;height:100%;background-color:rgba(0,0,0,0.7);position:absolute;z-index:2000;display:none;' id="ventanaCuentas">	
+	<div  style="background: rgba(0,0,0 0.8) none repeat scroll 0% 0%; width: 600px; height: auto; position: relative; z-index: 20000; text-align: center;margin:0 auto;margin-top:10%;">
+		<div class='row' id='popupLogin2' style="padding-top:6%;margin-top: 1000px; box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.75); background-color: #ffffff; color: #000000; margin-left: auto; margin-right: auto;overflow:auto;height:130px;border:10px solid #2EC1CC;">
+			<i class="fa fa-times-circle-o fa-2x" style='position:relative;float:right;z-index:2000;color:#000;margin-top:-37px;' onclick='cerrarVentanaCuentas()'></i>
+			<div class='col-md-6'>
+				<button type="button" class="btn btn-primary">Crear Nueva Cuenta NubePOS</button>
+			</div>
+			<div class='col-md-6'>
+				<button type="button" class="btn btn-primary" onclick='usarLogin()'>Usar Cuenta Existente NubePOS</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+    </body>
+<script>
+	function recibeConsultaApi(id_emp){
+		
+		localStorage.setItem("empresa", id_emp);
+		
+		 var empresa = localStorage.getItem('empresa');
+		 $('#id_emp').html('Conectado a: Emp'+empresa);
+		setTimeout(function(){
+			cerrarLogin2()
+		}, 2000);
+		
+	}
+	//enviaConsultaApi(568);
+	function enviaConsultaApi(id){
+		$.post('https://www.practisis.net/nubeposboot/www/ajax/dataservice.php',{
+			id : id 
+		}).done(function(response){
+			var arraydatos=JSON.parse(response);
+			//alert(response);
+			$('#empresaName').html(arraydatos.empresa.nombre);
+			$('#nemp').html("Emp. "+arraydatos.empresa.num);
+			$('#jsonProductos').html(arraydatos.productos);
+			$('#jsonCategorias').html(arraydatos.categorias);
+			$('#jsonformaspago').html(arraydatos.formaspago);
+			$('#jsonmisclientes').html(arraydatos.clientes);
+			$('#jsoncaja').html(arraydatos.cajas);
+			$('#loginPractisis').fadeOut('fast');
+			Ingresaproductos();
+			//console.log(arraydatos);
+		});
+	}
+	function abrirLogin(){
+	$('#loginPractisis').fadeIn(function(){
+			$('#popupLogin').animate({
+				marginTop : 0
+				},1000,function(){
+						$('#addDiscount').select();
+						$('#addDiscount').focus();
+						$('#addDiscount').val('');
+				});
+		});
+	
+	}
+	
+	function abrirLogin2(){
+		$('#loginPractisisNuevo').fadeIn(function(){
+			$('#popupLoginNuevo').animate({
+				marginTop : 0
+				},1000,function(){
+						$('#addDiscount').select();
+						$('#addDiscount').focus();
+						$('#addDiscount').val('');
+				});
+		});
+	
+	}
+
+	function abrirVentanaCuentas(){
+		$('#ventanaCuentas').fadeIn(function(){
+				$('#popupLogin2').animate({
+					marginTop : 0
+					},1000,function(){
+							$('#addDiscount').select();
+							$('#addDiscount').focus();
+							$('#addDiscount').val('');
+					});
+			});
+		
+	}
+	function cerrarVentanaCuentas(){
+		$('#popupLogin2').animate({
+			marginTop : '1000px'
+			},1000,function(){
+			$('#ventanaCuentas').fadeOut('slow');
+		});
+	}
+	function cerrarLogin(){
+		$('#popupLogin').animate({
+			marginTop : '1000px'
+			},1000,function(){
+			$('#loginPractisis').fadeOut('slow');
+		});
+	}
+	
+	function cerrarLogin2(){
+		$('#popupLoginNuevo').animate({
+			marginTop : '1000px'
+			},1000,function(){
+			$('#loginPractisisNuevo').fadeOut('slow');
+		});
+	}
+	
+	
+	function usarLogin(){
+		$('#popupLogin2').animate({
+			marginTop : '1000px'
+			},1000,function(){
+			$('#ventanaCuentas').fadeOut('slow');
+			abrirLogin2();
+		});
+	}
+	
+	
+	
+	
+	
+	
+	
+	function valida(){
+		document.getElementById('btnvalida').innerHTML="<img src='images/loader.gif' width='20px'/>";
+		var quien=document.getElementById("user").value;
+		var pass=document.getElementById("pass").value;
+		var xmlhttp=false;
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined') { try {xmlhttp = new XMLHttpRequest(); } catch (e) { xmlhttp=false;}}
+		if (!xmlhttp && window.createRequest) {	try { xmlhttp = window.createRequest();} catch (e) { xmlhttp=false;}}
+		xmlhttp.open("GET","https://www.practisis.net/loginNubepos.php?id="+quien+"&pass="+pass,true);
+		xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4){
+			if(xmlhttp.status==200){
+					var respuesta=xmlhttp.responseText;
+					console.log($.trim(respuesta));
+					if (respuesta.trim()!='error'){
+						$('#contieneEmpresas').html(respuesta);
+						
+					}else{
+						document.getElementById("mensaje").innerHTML="Credenciales no autorizadas.";
+						document.getElementById("user").value="";
+						document.getElementById("pass").value="";
+					}
+
+		}}} 
+		xmlhttp.send(null);
+	}  
+
+	function valida2(){
+		document.getElementById('btnvalida2').innerHTML="<img src='images/loader.gif' width='20px'/>";
+		var quien=document.getElementById("user2").value;
+		var pass=document.getElementById("pass2").value;
+		var xmlhttp=false;
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined') { try {xmlhttp = new XMLHttpRequest(); } catch (e) { xmlhttp=false;}}
+		if (!xmlhttp && window.createRequest) {	try { xmlhttp = window.createRequest();} catch (e) { xmlhttp=false;}}
+		xmlhttp.open("GET","https://www.practisis.net/loginNubeposExistente.php?id="+quien+"&pass="+pass,true);
+		xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4){
+			if(xmlhttp.status==200){
+					var respuesta=xmlhttp.responseText;
+					console.log($.trim(respuesta));
+					if (respuesta.trim()!='error'){
+						$('#contieneEmpresasNuevo').html(respuesta);
+						
+					}else{
+						document.getElementById("mensaje2").innerHTML="Credenciales no autorizadas.";
+						document.getElementById("user").value="";
+						document.getElementById("pass").value="";
+					}
+
+		}}} 
+		xmlhttp.send(null);
+	}  
+
+var smallerMenu = false;
+$(document).ready(function(){
+	$('.modal').each(centerModal);
+	$('#myModal').modal('show');
+	envia('dashboard');
+	onDeviceReady();
+});
+
+function centerModal(){ 
+	$(this).css('display', 'block');
+	var $dialog = $(this).find(".modal-dialog");
+	var offset = ($(window).height() - $dialog.height()) / 2;
+	// Center modal vertically in window
+	$dialog.css("margin-top", offset);
+}
+
+$(window).on('resize',function(){
+		$('.modal:visible').each(centerModal);
+		if($(this).width() >= 768){
+			$('#nav-container').data('isshown','false');
+			}
+	
+		if($('#nav-container').data('isshown') == 'false'){
+			if($(this).width() >= 768){
+				$('#nav-container').css('left','0px');
+				$('#content').css('left','220px');
+				$('.menuItem').css('left','0px');
+				smallerMenu = false;
+				}
+			else{
+				$('#nav-container').css('left','-220px');
+				$('#content').css('left','0px');
+				$('.menuItem').css('left','0px');
+				}
+			}
+});
+		
+$('.menu-button').on('click',function(){
+		if($('#nav-container').css('left') == '0px'){
+			$('#nav-container').css('left','-220px').data('isshown','false');
+			$('#content').css('left','0px');
+			}
+		else{
+			$('#nav-container').css('left','0px').data('isshown','true');
+			$('#content').css('left','220px');
+			}
+});
+		
+	$('.toggle-min').on('click',function(){
+		if ($('#nav-container, .menuItem, #content').is(':animated')){
+			return false;
+		}
+		$('li').find('ul').slideUp();
+	
+		if(smallerMenu === false){
+			$('#content').animate({
+				left : '50px'
+				});
+			
+			$('#nav-container').animate({
+				left : '-220px',
+				},function(){
+					$('.menuItem').each(function(index,object){
+						$(this).delay(index * 100);
+						
+						$(object).animate({
+							left : '220px'},{
+								duration: 800,
+								easing: 'swing'
+								});
+						});
+					});
+			
+			setTimeout(function(){
+				$('.menuItem').animate({
+					left : '170px'
+					});
+					
+				$('#nav-container').animate({
+					left : '-170px'
+					});
+				},1500)
+			
+			smallerMenu = true;
+			}
+		else{
+			$('li.open').find('ul').slideDown();
+		
+			$('#content').animate({
+				left : '220px'
+				});
+				
+			$('#nav-container').animate({
+				left : '0'
+				});
+			
+			$('.menuItem').animate({
+				left : '0px'
+				});
+				
+			smallerMenu = false;
+			}
+		});
+		
+	$('#nav > li').on('mouseenter',function(){
+		if(smallerMenu === true){
+			if($(this).closest('li').children('ul').length > 0){
+				var menu = '';
+				$(this).closest('li').children('ul').children('li').each(function(){
+					
+					var getHTML = $(this).html();
+					var newHTML = $(getHTML);
+					var url = newHTML.attr('href');
+					newHTML.find('i').css({'padding' : '0px', 'padding-left' : '10px', 'padding-right' : '10px', 'text-align' : 'left'});
+					menu += '<li style="text-align: left;"><a style="padding: 0px;" href="'+ url +'">'+ newHTML.html() +'</a></li>';
+					});
+					
+				$(this).find('i:first').append('<div class="dynMenu" style="background-color: #f1f1f1; color: #333333; left: 50px; width: 200px; font-family: Roboto,Arial,Helvetica,sans-serif; box-shadow: 1px 0px 6px 0px rgba(50, 50, 50, 0.64); top: 0; position: absolute; z-index: 999999;"><ul style="display: block;">'+ menu +'</div>');
+				}
+			}
+	});
+		
+	$('#nav > li').on('mouseleave',function(){
+		$('.dynMenu').remove();
+	});
+
+	$('#nav li').on('click',function(event){
+		if(smallerMenu === false){
+			event.stopPropagation();
+			if($('#nav > li > a').attr('href') == '#'){
+				if($(this).find('ul').length > 0){
+					if($(this).find('ul').css('display') == 'block'){
+						$('#nav-wrapper ul#nav li ul').removeClass('open');
+						$('#nav-wrapper ul#nav li ul').slideUp();
+						}
+					else{
+						$('#nav-wrapper ul#nav li').removeClass('open');
+						$('#nav-wrapper ul#nav li ul').slideUp();
+						$(this).addClass('open');
+						$(this).find('ul').slideDown();
+						}
+					}
+				}
+		}else{
+			if($(this).closest('li').children('ul').length > 0){
+				$('.dynMenu').remove();
+				var menu = '';
+				$(this).closest('li').children('ul').children('li').each(function(){
+					var getHTML = $(this).html();
+					var newHTML = $(getHTML);
+					newHTML.find('i').css({'padding' : '0px', 'padding-left' : '10px', 'padding-right' : '10px', 'text-align' : 'left'});
+					
+					menu += '<li style="text-align: left;">'+ newHTML.html() +'</li>';
+					});
+					
+				$(this).find('i:first').append('<div class="dynMenu" style="background-color: #f1f1f1; color: #333333; left: 50px; width: 200px; font-family: Roboto,Arial,Helvetica,sans-serif; box-shadow: 1px 0px 6px 0px rgba(50, 50, 50, 0.64); top: 0; position: absolute; z-index: 999999;"><ul style="display: block;">'+ menu +'</div>');
+				}
+			}
+		});
+	
+	function envia(donde){
+	//location.href="index.html#/"+donde;
+		var lugar='';
+		$('#myModal').modal('show');
+		if(donde=='dashboard')
+		lugar="views/dashboard.html";
+		if(donde=='nubepos/nubepos/')
+		lugar="views/nubepos/nubepos.html";
+			//lugar='views/clientes/listaclientes.html';
+		if(donde=='listaproductos')
+		lugar="views/productos/listaproductos.html";
+		if(donde=='nuevoproducto')
+		lugar="views/productos/nuevoproducto.html";
+		if(donde=='listaclientes')
+		lugar="views/clientes/listaclientes.html";
+		if(donde=='nuevocliente')
+		lugar="views/clientes/nuevocliente.html";
+		if(donde=='historial')
+		lugar="views/facturacion/historial.html";
+		$('#content').load(lugar,function(){
+		    $('#myModal').modal('hide');
+		});
+	}
+</script>
 </html>

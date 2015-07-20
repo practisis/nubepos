@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>NubePOS 1.0</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.0/morris.min.js"></script>
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
+        <!-- needs images, font... therefore can not be part of ui.css -->
+        <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="bower_components/weather-icons/css/weather-icons.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="styles/estilotemp.css">
+        <script type="text/javascript" src="js/cordova.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+        <!-- end needs images -->
+		<link rel="stylesheet" href="styles/mainformated.css">
+    </head>
+<style>
+.fa-edit{
+	color:#23ae89;
+}
+.fa-edit:hover{
+	color:#404041;
+}
+</style>
+<div id="mainDiv" style="margin: 0px; padding: 0px; width:100%; height: 800px; background-color: #ffffff; font-size:14px; color:#404041;">
+		<table style="width:100%;" border="0" cellpadding='10px' class='table table-striped'>
+			<tr>
+				<td >
+					<h3>Lista de Productos</h3>
+				</td>
+				<td>
+					<div>
+						<i class="fa fa-cloud-upload fa-5x" onclick='subeDatos()' id='sube1'></i>
+						<i class="fa fa-cloud-upload fa-5x" id='sube2' style='display:none;'></i>
+					</div>
+				</td>
+				<td>
+					<div>
+						<i class="fa fa-download fa-5x" onclick='enviaConsultaApi2()' id='sube1'></i>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align: right; vertical-align:middle; width: 450px;">
+					<!--<select id="categoryType" class='selectpicker'>
+						<option value="0">Todas las categorías</option>
+					</select>-->
+					<!-- Single button -->
+					<select id='listacategorias' style='font-size:15px;'>
+						<option value='0'>Todas las categorias</option>
+					</select>
+				</td>
+				<td style="text-align: left; vertical-align:middle; width: 550px;">
+					<table style="margin-left: 0px; margin-right: auto;" border="0" cellpadding="4px" cellspacing="10px">
+						<tr>
+							<td style='vertical-align:middle;'>
+								<input placeholder='busqueda' type="text" class='form-control' id="searchKeyword" name="category"/>
+							</td>
+							<td  style='vertical-align:middle;'>
+								<button type='button' class="btn btn-primary" onclick="page=0; getSearch(); return false;">Buscar</button>
+								<!--<input type="image" style="padding: 0px; margin: 0px;" onclick="getSearch(); return false;" alt="Search" src="gfx/search.png"/>-->
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<div id="detailDiv2" style="height:650px; padding-top:20px; margin:0px; font-size:15px;"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" style='text-align:center;'>
+					<ul class="pagination paginacion-lg" id='paginacion'>
+					</ul>
+					<input id='totalpags' style='display:none;'/>
+				</td>
+			</tr>
+		</table>	
+</div>
+<div class='Registro'>
+
+</div>
+
+<div id="jsonProductos" style="display: none;"></div>
+		<div id="jsonCategorias" style="display: none;"></div>
+		<div id="jsonformaspago" style="display: none;">{"FormaPago":[{"id":"1","nombre":"Efectivo","imagen":"Efectivo"},{"id":"2","nombre":"Tarjetas","imagen":"Tarjetas"},{"id":"3","nombre":"Cheques","imagen":"Bancos"},{"id":"4","nombre":"CxC","imagen":"CxC"},{"id":"5","nombre":"Retencion","imagen":"Retenciones1"},{"id":"9","nombre":"Cortesia","imagen":"Cortesia"},{"id":"14","nombre":"Otros","imagen":"General"}]}</div>
+		<div id='jsonmisclientes' style="display:none"></div>
+		<div style='display:none;' id='jsoncaja'></div>
+<script type="text/javascript">
+var page=0;
+ListarCategorias();
+getSearch();
+
+function ListarProductos(){
+	var db = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+	db.transaction(function(tx){
+	tx.executeSql('SELECT * FROM PRODUCTOS ORDER BY formulado ASC LIMIT ;',[],function(tx,results){
+		//console.log(results.rows.length);
+		var inhtml='';
+		for (var i=0; i < results.rows.length; i++){
+			   var row = results.rows.item(i);
+			   var checkiva='';
+			   var checkprfinal='';
+			   var checkmatprima='';
+			   if(row.cargaiva==1)
+					checkiva='checked';
+			   if(row.productofinal==1)
+					checkprfinal='checked';
+			   if(row.materiaprima==1)
+					checkmatprima='checked';
+				var catname='';
+			   inhtml+='<tr><td>'+row.formulado+'</td><td>'+row.codigo+'</td><td>'+row.nombrec+'</td><td style="text-align:right">'+parseFloat(row.precio).toFixed(2)+'</td><td style="text-align:center"><input disabled type="checkbox" '+checkiva+'/></td><td><span class="fa fa-edit"></span></td></tr>';
+			   /*<td style="text-align:center"><input disabled type="checkbox" '+checkprfinal+'/></td><td style="text-align:center"><input disabled type="checkbox" '+checkmatprima+'/></td><td><span class="fa fa-edit"></span></td></tr>';*/
+		}
+		LlenarTablaProd(inhtml);
+		});
+    },errorCB,successCB);
+}
+
+function LlenarTablaProd(datos){
+	$('#detailDiv2').html("<table align='center' class='table'><tr><th>Nombre</th><th>Código</th><th>Categoría</th><th style='text-align:right;'>Precio</th><th style='text-align:center'>Aplica IVA</th><th><span class='fa fa-cog'></span></th>"+datos+"</table>");
+}
+
+function ListarCategorias(){
+	var db = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+	db.transaction(function(tx){
+	tx.executeSql('SELECT * FROM CATEGORIAS ORDER BY id asc;',[],function(tx,results){
+		//console.log(results.rows.length);
+		var inhtml='';
+		for (var i=0; i < results.rows.length; i++){
+			var row=results.rows.item(i);
+			inhtml+='<option value="'+row.id+'">'+row.categoria+'</option>';
+		}
+		LlenarComboCat(inhtml);
+	});
+	},errorCB,successCB);
+}
+
+function LlenarComboCat(options){
+	$('#listacategorias').append(options);
+}
+function getSearch(){
+	var filtro=$('#searchKeyword').val();
+	var categoria=$('#listacategorias').val();
+	var desde=15*page;
+	var queryextra=' p.id is not NULL';
+	if(filtro!='')
+		queryextra+=' and (p.formulado like "%'+filtro+'%" or p.codigo like "%'+filtro+'%")';
+	if(categoria!=0)
+		queryextra+=' and p.categoriaid='+categoria;
+
+	var db = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+	db.transaction(function(tx){
+		tx.executeSql('SELECT * FROM PRODUCTOS ORDER BY formulado asc',[],function(tx,result){
+			$('#paginacion').html('');
+			var npags=Math.ceil(result.rows.length/15);
+			$('#totalpags').val(npags);
+			$('#paginacion').append("<li onclick='CambiarPagina(-1);'><span class='enabled' id='atras'>&laquo;</span></li>");
+			for(var j=0;j<npags;j++){
+				var act='';
+				if(page==j)
+					act='active';
+				$('#paginacion').append("<li class='"+act+"' onclick='CambiarPagina("+parseInt(j)+");'><span class='enabled'>"+parseInt(j+1)+"</span></li>");
+			}
+			$('#paginacion').append("<li onclick='CambiarPagina(-2);'><span class='enabled' id='adelante'>&raquo;</span></li>");
+		});
+	},errorCB,successCB);
+	
+	
+	db.transaction(function(tx){
+	tx.executeSql('SELECT * FROM PRODUCTOS ORDER BY formulado ASC ',[],function(tx,results){
+		//console.log(results);
+		var inhtml='';
+		for (var i=0; i < results.rows.length; i++){
+			var row = results.rows.item(i);
+			var checkiva='';
+			var checkprfinal='';
+			var checkmatprima='';
+			if(row.cargaiva==1)
+					checkiva='checked';
+			if(row.productofinal==1)
+					checkprfinal='checked';
+			if(row.materiaprima==1)
+					checkmatprima='checked';
+			var catname='';
+			inhtml+='<tr><td>'+row.formulado+'</td><td>'+row.codigo+'</td><td>'+row.nombrec+'</td><td style="text-align:right">'+parseFloat(row.precio).toFixed(2)+'</td><td style="text-align:center"><input disabled type="checkbox" '+checkiva+'/></td><td><span class="fa fa-edit" style="cursor:pointer;" onclick="EditarProducto('+row.id_local+');"></span></td></tr>';
+			/*<td style="text-align:center"><input disabled type="checkbox" '+checkprfinal+'/></td><td style="text-align:center"><input disabled type="checkbox" '+checkmatprima+'/></td><td><span class="fa fa-edit" style="cursor:pointer;" onclick="EditarProducto('+row.id+');"></span></td></tr>';*/
+		}
+		LlenarTablaProd(inhtml);
+	});
+	},errorCB,successCB);
+}
+
+function CambiarPagina(arg){
+	//console.log($('#totalpags').val());
+	if(arg==-1){
+		if((page-1)>=0){
+			page--;
+			getSearch();
+		}
+	}else if(arg==-2){
+		//console.log($('#totalpags').val());
+		if((page+1)<parseInt($('#totalpags').val())){
+			page++;
+			getSearch();
+		}
+	}else{
+		page=arg;
+		getSearch();
+	}
+	
+}
+
+function EditarProducto(idpr){
+	$('#content').load("views/productos/nuevoproducto.html",function(){
+		VerDatosProducto(idpr);
+	});
+}
+
+$(document).keyup(function(event){
+	if(event.keyCode === 13){
+		getSearch();
+		}
+});
+function subeDatos(){
+		var db2 = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+		var miqueryFac='SELECT P.* , C.categoria  FROM PRODUCTOS  P , CATEGORIAS  C where  C.id = P.categoriaid ORDER BY P.formulado asc';
+		//alert(miqueryFac);
+		var empresa = localStorage.getItem('empresa');
+		console.log(empresa)
+		db2.transaction(function(tx){
+		tx.executeSql(miqueryFac,[],function(tx,results){
+			//alert(results);
+			var inhtml='';
+			for (var i=0; i < results.rows.length; i++){
+				var row = results.rows.item(i);
+				var formulado = row.formulado;
+				var codigo = row.codigo;
+				var precio = row.precio;
+				var categoriaid = row.categoria;
+				var cargaiva = row.cargaiva;
+				var productofinal = row.productofinal;
+				var materiaprima = row.materiaprima;
+				$.post('http://practisis.net/practipos2/ajax/apiSincronizador/apiSincronizaNubeposProductos.php',{
+					empresa : empresa , formulado : formulado , codigo : codigo , precio : precio , categoriaid : categoriaid , cargaiva : cargaiva , productofinal : productofinal , materiaprima : materiaprima
+				}).done(function(data){
+					alert(data);
+				});
+				
+			}
+			
+		});
+		},errorCB,successCB);
+		
+		//enviaConsultaApi2(empresa);
+	}
+	
+	//setTimeout(function() {
+		//var empresa = localStorage.getItem('empresa');
+		//enviaConsultaApi2(empresa);
+	//}, 5000);
+
+	function enviaConsultaApi2(){
+		var id = localStorage.getItem('empresa');
+		$.post('https://www.practisis.net/nubeposboot/www/ajax/dataservice.php',{
+			id : id 
+		}).done(function(response){
+			console.log(response);
+			var arraydatos=JSON.parse(response); 
+			//alert(response);
+			$('#empresaName').html(arraydatos.empresa.nombre);
+			$('#nemp').html("Emp. "+arraydatos.empresa.num);
+			$('#jsonProductos').html(arraydatos.productos);
+			$('#jsonCategorias').html(arraydatos.categorias);
+			$('#jsonformaspago').html(arraydatos.formaspago);
+			$('#jsonmisclientes').html(arraydatos.clientes);
+			$('#jsoncaja').html(arraydatos.cajas);
+			$('#loginPractisis').fadeOut('fast');
+			Ingresaproductos2();
+			//console.log(arraydatos);
+		});
+	}
+	
+	function Ingresaproductos2(){
+		 var json = $('#jsonProductos').html();
+			var mijson = eval(''+json+'');
+			for(var j in mijson){
+				for(var k in mijson[j]){
+					for(i = 0; i < mijson[j][k].length; i++){
+							var item = mijson[j][k][i];
+							InsertaProducto2(item);
+					}
+				}
+			}
+    }
+	
+	function InsertaProducto2(itempr){
+		var db = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+		var cargaiva=0;
+		var imp=itempr.formulado_tax_id.split('|');
+		
+		if(imp.indexOf("1")>=0)
+			cargaiva=1;
+		var nombreFormulado = itempr.formulado_nombre;
+		//console.log(nombreFormulado);
+		
+		var miqueryProd="SELECT * FROM PRODUCTOS  where lower(formulado) =  lower('"+nombreFormulado+"') ORDER BY id asc";
+		//console.log(miqueryProd);
+		db.transaction(function(tx){
+		tx.executeSql(miqueryProd,[],function(tx,results){
+			console.log(results.rows.length +'@'+ nombreFormulado);
+			if(results.rows.length > 0 ){
+				alert('no ingresara este producto:     ' + nombreFormulado);
+			}else{
+				db.transaction(
+				function (tx){
+						tx.executeSql('INSERT INTO PRODUCTOS (id,formulado,codigo,precio,categoriaid,cargaiva,productofinal,materiaprima) VALUES (?,?,?,?,?,?,?,?);',[itempr.formulado_id,itempr.formulado_nombre,itempr.formulado_codigo,itempr.formulado_precio,itempr.formulado_tipo,cargaiva,1,itempr.formulado_matprima],
+						function(tx,res){
+							console.log("producto insertado:"+res.insertId)
+						});				
+				},errorCB,successCB);
+			}
+			
+		});
+		},errorCB,successCB);
+		
+			
+	}
+</script>
